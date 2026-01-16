@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chatbot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            overflow: hidden;
+            color: #fff;
+        }
+
+        #titlebar {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            -webkit-app-region: drag;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #titlebar h1 {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        #controls {
+            display: flex;
+            gap: 8px;
+            -webkit-app-region: no-drag;
+        }
+
+        .control-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.2s;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        #chat-container {
+            height: calc(100vh - 160px);
+            overflow-y: auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        #chat-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #chat-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        .message {
+            margin-bottom: 16px;
+            padding: 12px 16px;
+            border-radius: 16px;
+            max-width: 85%;
+            word-wrap: break-word;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            background: rgba(255, 255, 255, 0.25);
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .message.bot {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .message.error {
+            background: rgba(255, 59, 48, 0.3);
+            border: 1px solid rgba(255, 59, 48, 0.5);
+        }
+
+        #input-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 16px;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+        }
+
+        #message-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        #message-input:focus {
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        #message-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        #api-setup {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 350px;
+            z-index: 1000;
+        }
+
+        #api-setup h2 {
+            margin-bottom: 16px;
+            font-size: 20px;
+        }
+
+        #api-setup p {
+            margin-bottom: 20px;
+            opacity: 0.9;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        #api-setup input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        #api-setup button {
+            width: 100%;
+            padding: 12px;
+            background: rgba(102, 126, 234, 0.8);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        #api-setup button:hover {
+            background: rgba(102, 126, 234, 1);
+        }
+
+        #api-setup a {
+            color: #a0aeff;
+            text-decoration: none;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .typing {
+            display: inline-block;
+        }
+
+        .typing span {
+            animation: blink 1.4s infinite;
+            animation-fill-mode: both;
+        }
+
+        .typing span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes blink {
+            0%, 80%, 100% {
+                opacity: 0;
+            }
+            40% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="titlebar">
+        <h1>🤖 AI Chatbot</h1>
+        <div id="controls">
+            <button class="control-btn" id="minimize-btn">−</button>
+            <button class="control-btn" id="close-btn">×</button>
+        </div>
+    </div>
+
+    <div id="api-setup" class="hidden">
+        <h2>🔑 API Key Required</h2>
+        <p>Get a free API key from <a href="https://openrouter.ai/keys" target="_blank">OpenRouter</a></p>
+        <input type="text" id="api-key-input" placeholder="Paste your API key here">
+        <button id="save-api-key">Save & Start</button>
+    </div>
+
+    <div id="chat-container">
+        <div class="message bot">
+            👋 Hi! I'm your desktop AI assistant.<br>
+            <small style="opacity: 0.7;">Press Ctrl+Space anywhere to toggle me!</small>
+        </div>
+    </div>
+
+    <div id="input-container">
+        <input type="text" id="message-input" placeholder="Ask me anything..." autocomplete="off">
+    </div>
+
+    <script>
+        const chatContainer = document.getElementById('chat-container');
+        const messageInput = document.getElementById('message-input');
+        const apiSetup = document.getElementById('api-setup');
+        const apiKeyInput = document.getElementById('api-key-input');
+        const saveApiKeyBtn = document.getElementById('save-api-key');
+
+        let apiKey = localStorage.getItem('openrouter_api_key');
+
+        // Window controls
+        document.getElementById('minimize-btn').addEventListener('click', () => {
+            window.electronAPI.minimizeWindow();
+        });
+
+        document.getElementById('close-btn').addEventListener('click', () => {
+            window.electronAPI.closeWindow();
+        });
+
+        // API key setup
+        if (!apiKey) {
+            apiSetup.classList.remove('hidden');
+            messageInput.disabled = true;
+        }
+
+        saveApiKeyBtn.addEventListener('click', () => {
+            const key = apiKeyInput.value.trim();
+            if (key) {
+                localStorage.setItem('openrouter_api_key', key);
+                apiKey = key;
+                apiSetup.classList.add('hidden');
+                messageInput.disabled = false;
+                messageInput.focus();
+                addMessage('bot', '✅ API key saved! You can start chatting now.');
+            }
+        });
+
+        // Chat functionality
+        messageInput.addEventListener('keypress', async (e) => {
+            if (e.key === 'Enter' && messageInput.value.trim()) {
+                const message = messageInput.value.trim();
+                messageInput.value = '';
+                
+                addMessage('user', message);
+                
+                const typingMsg = addMessage('bot', '<div class="typing"><span>•</span><span>•</span><span>•</span></div>');
+                
+                try {
+                    const response = await window.electronAPI.sendChat(message, apiKey);
+                    
+                    chatContainer.removeChild(typingMsg);
+                    
+                    if (response.success) {
+                        addMessage('bot', response.message);
+                    } else {
+                        addMessage('error', `❌ Error: ${response.error}`);
+                    }
+                } catch (error) {
+                    chatContainer.removeChild(typingMsg);
+                    addMessage('error', `❌ Failed to connect: ${error.message}`);
+                }
+            }
+        });
+
+        function addMessage(type, text) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${type}`;
+            msgDiv.innerHTML = text;
+            chatContainer.appendChild(msgDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            return msgDiv;
+        }
+
+        // Focus input on load
+        messageInput.focus();
+    </script>
+</body>
+</html>

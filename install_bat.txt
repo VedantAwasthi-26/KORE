@@ -1,0 +1,58 @@
+@echo off
+title Desktop AI Chatbot Installer
+color 0B
+
+echo.
+echo ========================================
+echo   DESKTOP AI CHATBOT INSTALLER
+echo ========================================
+echo.
+
+REM Check if Node.js is installed
+where node >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [ERROR] Node.js not found!
+    echo.
+    echo Please install Node.js first:
+    echo 1. Go to https://nodejs.org
+    echo 2. Download the LTS version
+    echo 3. Install it
+    echo 4. Run this installer again
+    echo.
+    pause
+    exit /b 1
+)
+
+echo [OK] Node.js detected
+node --version
+
+echo.
+echo Installing dependencies...
+echo This may take 2-3 minutes...
+echo.
+
+call npm install
+
+if %errorlevel% neq 0 (
+    echo.
+    echo [ERROR] Installation failed!
+    echo Try running: npm install
+    pause
+    exit /b 1
+)
+
+echo.
+echo ========================================
+echo   INSTALLATION COMPLETE!
+echo ========================================
+echo.
+echo Starting Desktop AI Chatbot...
+echo.
+echo TIP: Press Ctrl+Space to show/hide
+echo      the chatbot from anywhere!
+echo.
+
+timeout /t 2 >nul
+start "" npm start
+
+exit

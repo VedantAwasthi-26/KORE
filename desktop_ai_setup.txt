@@ -1,0 +1,53 @@
+# Desktop AI Chatbot - Installation Guide
+
+## 📦 What You're Getting
+A standalone desktop AI chatbot that works on Windows, with a clean interface and global hotkey (Ctrl+Space).
+
+## 🚀 Quick Setup (For the User)
+
+### Option 1: Automatic Installation (Recommended)
+1. Extract all files to a folder (e.g., `C:\AI-Chatbot\`)
+2. Double-click `INSTALL.bat`
+3. Wait for installation (2-3 minutes)
+4. The app will launch automatically
+5. Press **Ctrl+Space** anywhere to show/hide the chatbot
+
+### Option 2: Manual Installation
+1. Install Node.js from https://nodejs.org (download LTS version)
+2. Extract all files to a folder
+3. Open Command Prompt in that folder
+4. Run: `npm install`
+5. Run: `npm start`
+
+## 📁 Files You'll Send to the User
+
+You need to send these 5 files:
+- `INSTALL.bat` - Auto-installer
+- `package.json` - Dependencies
+- `main.js` - App core
+- `index.html` - Interface
+- `README.txt` - Simple instructions
+
+## 🔑 API Key Setup
+
+The app uses OpenRouter (free tier available). The user needs to:
+1. Get a free API key from https://openrouter.ai/keys
+2. When the app first launches, paste the API key
+3. It will be saved locally
+
+## ⚡ Features
+- **Global Hotkey**: Ctrl+Space to toggle from anywhere
+- **Always on Top**: Stays visible while working
+- **Drag to Move**: Click header to reposition
+- **Persistent**: Minimizes to background, doesn't close
+- **Free AI**: Uses OpenRouter's free tier (GPT-3.5)
+
+## 🛠️ Troubleshooting
+
+**"Node.js not found"**: Install from nodejs.org first
+
+**"API key invalid"**: Get new key from openrouter.ai/keys
+
+**Hotkey not working**: Check if another app uses Ctrl+Space
+
+**App won't start**: Run `npm install` again in the folder
