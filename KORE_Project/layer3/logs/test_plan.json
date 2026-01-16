@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-01-16T19:21:08.795792",
+  "query": "Organize files by rules",
+  "source_folder": "test_files/messy_downloads",
+  "mode": "rules",
+  "action": "organize_files",
+  "operations": [],
+  "reasoning": "Organized 3 files using predefined classification rules",
+  "risk_level": "low",
+  "requires_confirmation": true,
+  "warnings": [
+    "Skipped: test_files/messy_downloads/report.pdf does not exist",
+    "Skipped: test_files/messy_downloads/vacation.jpg does not exist",
+    "Skipped: test_files/messy_downloads/video.mp4 does not exist"
+  ]
+}
